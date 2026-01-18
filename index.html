@@ -40,16 +40,29 @@
             line-height: 1.3;
         }
 
+        .counters {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .counter-box {
+            flex: 1;
+            min-width: 180px;
+        }
+
         .countdown {
-            font-size: 72px;
+            font-size: 56px;
             font-weight: 700;
             color: #667eea;
-            margin: 20px 0;
+            margin: 10px 0;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .label {
-            font-size: 22px;
+            font-size: 18px;
             color: #718096;
             margin-top: 5px;
             font-weight: 500;
@@ -91,12 +104,20 @@
                 font-size: 24px;
             }
             
+            .counters {
+                gap: 20px;
+            }
+
+            .counter-box {
+                min-width: 140px;
+            }
+            
             .countdown {
-                font-size: 60px;
+                font-size: 48px;
             }
             
             .label {
-                font-size: 20px;
+                font-size: 16px;
             }
         }
     </style>
@@ -105,8 +126,16 @@
     <div class="container">
         <div class="emoji">🎉</div>
         <h1>Wie lange muss Janine noch in die Kita?</h1>
-        <div class="countdown" id="days">0</div>
-        <div class="label">Tage</div>
+        <div class="counters">
+            <div class="counter-box">
+                <div class="countdown" id="days">0</div>
+                <div class="label">Kalendertage</div>
+            </div>
+            <div class="counter-box">
+                <div class="countdown" id="workdays">0</div>
+                <div class="label">Arbeitstage</div>
+            </div>
+        </div>
         <div class="date">bis zum 19. März 2026</div>
         <div class="cat-container">
             <img id="catGif" class="cat-gif" alt="Lustige Katze">
@@ -125,11 +154,26 @@
             const diff = targetDate - now;
             const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
             
+            // Berechne Arbeitstage (Montag-Freitag)
+            let workdays = 0;
+            let currentDate = new Date(now);
+            currentDate.setHours(0, 0, 0, 0);
+            
+            while (currentDate < targetDate) {
+                const dayOfWeek = currentDate.getDay();
+                // 0 = Sonntag, 6 = Samstag, also 1-5 = Montag-Freitag
+                if (dayOfWeek >= 1 && dayOfWeek <= 5) {
+                    workdays++;
+                }
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+            
             document.getElementById('days').textContent = days > 0 ? days : 0;
+            document.getElementById('workdays').textContent = workdays > 0 ? workdays : 0;
             
             if (days <= 0) {
                 document.querySelector('h1').textContent = 'Janine muss nicht mehr in die Kita! 🎊';
-                document.querySelector('.label').textContent = '';
+                document.querySelector('.counters').style.display = 'none';
             }
         }
 
